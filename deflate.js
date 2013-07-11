@@ -3,7 +3,7 @@ var zlib = require('zlib');
 module.exports = deflate;
 
 // deflate(source<binary>) -> source<deflated_binary>
-function deflate(read) {
+function deflate(input) {
   var dataQueue = [];
   var readQueue = [];
   var reading = false, done = false;
@@ -35,7 +35,7 @@ function deflate(read) {
 
     if (!reading && !done && readQueue.length) {
       reading = true;
-      read(null, onRead);
+      input.read(onRead);
     }
   }
 
@@ -50,9 +50,10 @@ function deflate(read) {
     check();
   }
 
-  return function (close, callback) {
-    if (close) return read(close, callback);
+  return { read: read, abort: input.abort };
+
+  function read(callback) {
     readQueue.push(callback);
     check();
-  };
+  }
 }
