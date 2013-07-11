@@ -29,9 +29,16 @@ operation(arg1, arg2, function (err, result) {
 
 Since all the functions support both callback-last and return-continuable styles.
 
-## fsDb(fs) -> db
+## fsDb(fs, options) -> continuable&lt;db>
 
 Given a [git-fs][] implementation return a [git-db][] implementation.
+
+```js
+// Create a filesystem interface rooted at the place we want to create the repo.
+var fs = require('simple-fs')('/path/to/my/repo.git');
+// Create a database instance as a bare repo creating the directory structure.
+var db = yield require('git-fs-db')(fs, {bare: true, init: true});
+```
 
 ### db.save(object) -> continuable&lt;hash>
 
