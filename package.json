@@ -1,6 +1,6 @@
 {
   "name": "git-fs-db",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A git-db implementation that wraps a git-fs interface instance.  Creates real git repos in the fs.",
   "main": "fs-db.js",
   "dependencies": {
