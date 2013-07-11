@@ -40,6 +40,14 @@ var fs = require('simple-fs')('/path/to/my/repo.git');
 var db = yield require('git-fs-db')(fs, {bare: true, init: true});
 ```
 
+### db.write(path, value) -> continuable
+
+Write a value to a file.  Used for things like git refs.  Will create parent directories automatically.
+
+### db.read(path) -> continuable&lt;value>
+
+Read a value from a file as a string.  Used for reading refs.
+
 ### db.save(object) -> continuable&lt;hash>
 
 Save a git object to the database, return the hash in the continuable when done.
