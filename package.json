@@ -1,0 +1,35 @@
+{
+  "name": "git-fs-db",
+  "version": "0.0.0",
+  "description": "A git-db implementation that wraps a git-fs interface instance.  Creates real git repos in the fs.",
+  "main": "fs-db.js",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "simple-fs": "~0.0.2",
+    "bops": "0.0.6",
+    "simple-stream-helpers": "0.0.3"
+  },
+  "browser": {
+    "./deflate.js": "./deflate-browser.js",
+    "./inflate.js": "./inflate-browser.js",
+    "./sha1.js": "./sha1-browser.js"
+  },
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/creationix/git-fs-db.git"
+  },
+  "keywords": [
+    "simple-stream",
+    "jsgit",
+    "db"
+  ],
+  "author": "Tim Caswell <tim@creationix.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/creationix/git-fs-db/issues"
+  }
+}
