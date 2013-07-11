@@ -15,13 +15,16 @@ require('./.')(fs, { bare: true, init: true }, function (err, db) {
     body: binarySource(data)
   })(function (err, hash) {
     if (err) throw err;
-    console.log(hash);
     db.load(hash)(function (err, obj) {
     if (err) throw err;
-      console.log(obj);
       consume(obj.body)(function (err, items) {
         if (err) throw err;
-        console.log(items);
+        console.log({
+          hash: hash,
+          type: obj.type,
+          size: obj.size,
+          body: bops.to(bops.join(items))
+        });
       });
     });
   });
