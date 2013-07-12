@@ -44,7 +44,6 @@ function fsDb(fs, options, callback) {
     return "objects/" + hash.substr(0, 2) + "/" + hash.substr(2);
   }
 
-
   function write(path, data, callback) {
     if (!callback) return write.bind(this, path, data);
     mkdirp(dirname(path), function (err) {
@@ -111,7 +110,16 @@ function fsDb(fs, options, callback) {
 
   function remove(hash, callback) {
     if (!callback) return remove.bind(this, hash);
-    throw new Error("TODO: Implement remove");
+    var path = hashToPath(hash);
+    fs.unlink(path, function (err) {
+      if (err) return callback(err);
+      fs.rmdir(dirname(path), function (err) {
+        if (err && err.code !== "ENOTEMPTY") {
+          return callback(err);
+        }
+        callback();
+      });
+    });
   }
 
   function init(config) {
