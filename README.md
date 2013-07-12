@@ -64,17 +64,7 @@ Load a git object from the database by hash.  Return in the continuable.
 var obj = yield db.load(hash);
 ```
 
-### db.save(object) -> continuable&lt;hash>
-
-Save a git object to the database, return the hash in the continuable when done.
-
-```js
-var hash = yield db.save(obj);
-```
-
-## Git Objects
-
-At this level git objects are simply type, size, and a binary stream of data.
+In this module, git objects are simply type, size, and a binary stream of data.
 The stream is in [simple-stream][] format.
 
 ```js
@@ -84,6 +74,14 @@ The stream is in [simple-stream][] format.
   body: stream    // binary simple-stream of the body
 }
 ````
+
+### db.save(object) -> continuable&lt;hash>
+
+Save a git object to the database, return the hash in the continuable when done.
+
+```js
+var hash = yield db.save(obj);
+```
 
 ### db.remove(hash) -> continuable
 
