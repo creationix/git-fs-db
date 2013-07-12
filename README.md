@@ -40,13 +40,29 @@ var fs = require('simple-fs')('/path/to/my/repo.git');
 var db = yield require('git-fs-db')(fs, {bare: true, init: true});
 ```
 
+### db.read(path) -> continuable&lt;value>
+
+Read a value from a file as a string.  Used for reading refs.
+
+```js
+var master = yield db.read("/refs/heads/master");
+```
+
 ### db.write(path, value) -> continuable
 
 Write a value to a file.  Used for things like git refs.  Will create parent directories automatically.
 
-### db.read(path) -> continuable&lt;value>
+```js
+yield db.write("/ref/heads/master", master);
+```
 
-Read a value from a file as a string.  Used for reading refs.
+### db.load(hash) -> continuable&lt;object>
+
+Load a git object from the database by hash.  Return in the continuable.
+
+```js
+var obj = yield db.load(hash);
+```
 
 ### db.save(object) -> continuable&lt;hash>
 
@@ -68,14 +84,6 @@ The stream is in [simple-stream][] format.
   body: stream    // binary simple-stream of the body
 }
 ````
-
-### db.load(hash) -> continuable&lt;object>
-
-Load a git object from the database by hash.  Return in the continuable.
-
-```js
-var obj = yield db.load(hash);
-```
 
 ### db.remove(hash) -> continuable
 
