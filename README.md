@@ -87,6 +87,10 @@ var hash = yield db.save(obj);
 
 Remove an item from the database.
 
+```js
+yield db.remove(hash);
+```
+
 ## License
 
 The MIT License (MIT)
