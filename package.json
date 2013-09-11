@@ -1,0 +1,24 @@
+{
+  "name": "git-fs-db",
+  "version": "0.1.0",
+  "description": "A js-git interface adapter that implements db using fs.",
+  "main": "fs-db.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/creationix/git-fs-db.git"
+  },
+  "keywords": [
+    "js-git",
+    "fs",
+    "db",
+    "git"
+  ],
+  "author": "Tim Caswell",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/creationix/git-fs-db/issues"
+  }
+}
