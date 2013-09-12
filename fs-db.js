@@ -10,6 +10,7 @@ module.exports = function (platform) {
       load: load,
       save: save,
       remove: remove,
+      has: has,
       read: read,
       write: write,
       unlink: unlink,
@@ -35,6 +36,17 @@ module.exports = function (platform) {
     function remove(hash, callback) {
       if (!callback) return remove.bind(this, hash);
       return unlink(hashToPath(hash), callback);
+    }
+
+    function has(hash, callback) {
+      if (!callback) return has.bind(this, hash);
+      return fs.stat(hashToPath(hash), function (err) {
+        if (err) {
+          if (err.code === "ENOENT") return callback();
+          return callback(err);
+        }
+        return callback(null, true);
+      });
     }
 
     function read(path, callback) {
