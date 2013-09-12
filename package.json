@@ -1,6 +1,6 @@
 {
   "name": "git-fs-db",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A js-git interface adapter that implements db using fs.",
   "main": "fs-db.js",
   "scripts": {
