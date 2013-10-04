@@ -1,5 +1,6 @@
 module.exports = function (platform) {
 
+  var isHash = /^[a-z0-9]{40}$/;
   return fsDb;
 
   function fsDb(fs) {
@@ -7,63 +8,53 @@ module.exports = function (platform) {
     var deflate = platform.deflate;
 
     return {
-      load: load,
-      save: save,
-      remove: remove,
+      get: get,
+      set: set,
       has: has,
-      read: read,
-      write: write,
-      unlink: unlink,
-      readdir: readdir
+      del: del,
+      keys: keys,
+      init: init,
+      clear: clear,
     };
 
-    function load(hash, callback) {
-      if (!callback) return load.bind(this, hash);
-      return fs.read(hashToPath(hash), function (err, deflated) {
-        if (err) return callback(err);
-        return inflate(deflated, callback);
-      });
+    function get(key, callback) {
+      if (!callback) return get.bind(this, key);
+      if (isHash.test(key)) {
+        return fs.read(hashToPath(key), function (err, deflated) {
+          if (err) return callback(err);
+          return inflate(deflated, callback);
+        });
+      }
+      return fs.read(key, "ascii")(callback);
     }
 
-    function save(hash, buffer, callback) {
-      if (!callback) return save.bind(this, hash, buffer);
-      return deflate(buffer, function (err, deflated) {
-        if (err) return callback(err);
-        return write(hashToPath(hash), deflated, callback);
-      });
-    }
-
-    function remove(hash, callback) {
-      if (!callback) return remove.bind(this, hash);
-      return unlink(hashToPath(hash), callback);
-    }
-
-    function has(hash, callback) {
-      if (!callback) return has.bind(this, hash);
-      return fs.stat(hashToPath(hash), function (err) {
-        if (err) {
-          if (err.code === "ENOENT") return callback();
-          return callback(err);
-        }
-        return callback(null, true);
-      });
-    }
-
-    function read(path, callback) {
-      if (!callback) return fs.read(path, "ascii");
-      return fs.read(path, "ascii")(callback);
+    function set(key, value, callback) {
+      if (!callback) return set.bind(this, key, value);
+      if (isHash.test(key)) {
+        return deflate(value, function (err, deflated) {
+          if (err) return callback(err);
+          return write(hashToPath(key), deflated, callback);
+        });
+      }
+      return write(key, value, callback);
     }
 
     function write(path, data, callback) {
-      if (!callback) return write.bind(this, path, data);
       return mkdirp(dirname(path), function (err) {
         if (err) return callback(err);
         return fs.write(path, data)(callback);
       });
     }
 
+    function del(key, callback) {
+      if (!callback) return del.bind(this, key);
+      if (isHash.test(key)) {
+        return unlink(hashToPath(key), callback);
+      }
+      return unlink(key, callback);
+    }
+
     function unlink(path, callback) {
-      if (!callback) return unlink.bind(this, path);
       fs.unlink(path, function (err) {
         if (err) return callback(err);
         clean(dirname(path));
@@ -80,9 +71,24 @@ module.exports = function (platform) {
       }
     }
 
-    function readdir(path, callback) {
-      if (!callback) return readdir.bind(this, path);
-      return fs.readdir(path, callback);
+    function has(key, callback) {
+      if (!callback) return has.bind(this, key);
+      if (isHash.test(key)) {
+        return fs.stat(hashToPath(key), onStat);
+      }
+      return fs.stat(key, onStat);
+      function onStat(err) {
+        if (err) {
+          if (err.code === "ENOENT") return callback();
+          return callback(err);
+        }
+        return callback(null, true);
+      }
+    }
+
+    function keys(prefix, callback) {
+      if (!callback) return keys.bind(this, prefix);
+      return fs.readdir(prefix || "/", callback);
     }
 
     function hashToPath(hash) {
@@ -90,7 +96,6 @@ module.exports = function (platform) {
     }
 
     function mkdirp(path, callback) {
-      if (!callback) return mkdirp.bind(this, path);
       fs.mkdir(path)(function (err) {
         if (!err || err.code === "EEXIST") return callback();
         if (err.code === "ENOENT") {
@@ -101,6 +106,16 @@ module.exports = function (platform) {
         }
         return callback(err);
       });
+    }
+
+    function init(callback) {
+      if (!callback) return init.bind(this);
+      callback();
+    }
+
+    function clear(callback) {
+      if (!callback) return clear.bind(this);
+      callback(new Error("TODO: rm-rf the directory"));
     }
   }
 
