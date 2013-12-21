@@ -20,5 +20,9 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/creationix/git-fs-db/issues"
+  },
+  "devDependencies": {
+    "git-node-platform": "~0.1.4",
+    "should": "~2.1.1"
   }
 }
