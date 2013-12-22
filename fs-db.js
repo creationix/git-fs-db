@@ -91,6 +91,10 @@ module.exports = function (platform) {
       var results = [ ];
       var targets = [ ];
 
+      // Ensure path ends with exactly one trailing slash.
+      function trail (path) {
+        return path + (path[path.length - 1] == '/' ? '' : '/' )
+      }
       // generate potential matches for everything under this prefix
       // Takes a callback and calls it once async `fs.readdir` is done.
       function listKeys (prefix, cb) {
@@ -98,7 +102,7 @@ module.exports = function (platform) {
         fs.readdir(prefix, function (err, found) {
           if (!err) found.forEach(function (item) {
             // transform the matches into paths relative to repo root
-            var name = prefix + '/' + item + '';
+            var name = trail(prefix) + item;
             // make note of outstanding candidates
             targets.unshift(name);
             list.push(name);
@@ -143,8 +147,7 @@ module.exports = function (platform) {
       function onKeys (err, list) {
         // only respond to non errors, make sure list is sorted for
         // stable testable output
-        if (!err) list.sort( ).forEach(function (key, i) {
-            var name = key;
+        if (!err) list.sort( ).forEach(function (name, i) {
             // for each potential key, separate remaining subdirectory
             // matches from matched key names.
             isKeyName(name, function (err, found, remain) {
@@ -152,11 +155,14 @@ module.exports = function (platform) {
               // this candidate's task.
               shift( );
               // A partial key generates remaining to process.
+              // Order matters here, returning onKeys before adding
+              // name makes this a greedy directory depth first
+              // search.
               if (remain) return onKeys(err, remain);
               // A complete key should be added to results list.
               if (name) results.push(name);
               if (!err && !remain && i == list.length - 1) {
-                // if there is nothing left to do, exactly one more
+                // If there is nothing left to do, exactly one more
                 // shift should trigger finish.
                 if (targets.length === 0) {
                   shift( );

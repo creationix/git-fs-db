@@ -54,7 +54,7 @@ if (!module.parent) {
 
         it('should generate one match given refs/one', function (done) {
           db.init( );
-          db.keys('refs/one', function (err, keys) {
+          db.keys('refs/one/', function (err, keys) {
             should.not.exist(err);
             var correct = [ 'refs/one/.gitkeep' ];
 
