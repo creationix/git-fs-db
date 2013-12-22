@@ -8,8 +8,13 @@ if (!module.parent) {
   console.log("MAIN");
   db = fsDB(platform)(platform.fs("test/keys/"));
   db.init( );
+  function msg (msg) {
+    return function ( ) { console.log(msg, arguments); };
+  }
   console.log('db', db);
-  db.keys('refs/', console.log);
+  // db.keys('refs/', msg("XXX MAIN REFS"));
+  // db.keys('refs/foo/qux', msg("XXXX refs/foo/qux"));
+  db.keys('refs/foo/', msg("XXX refs/foo/bar"));
 
 } else {
   describe('git-fs-db backend', function ( ) {
