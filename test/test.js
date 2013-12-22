@@ -14,9 +14,6 @@ if (!module.parent) {
   function match(ref) {
     db.keys(ref, msg('MATCH ' + ref));
   }
-  console.log('db', db);
-  // db.keys('refs/', msg("XXX MAIN REFS"));
-  // db.keys('refs/foo/qux', msg("XXXX refs/foo/qux"));
   match('refs/foo/');
   match('refs/two');
   match('refs/four');
