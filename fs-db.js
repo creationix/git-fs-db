@@ -92,6 +92,7 @@ module.exports = function (platform) {
       var targets = [ ];
 
       // generate potential matches for everything under this prefix
+      // Takes a callback and calls it once async `fs.readdir` is done.
       function listKeys (prefix, cb) {
         var list = [ ];
         fs.readdir(prefix, function (err, found) {
@@ -107,7 +108,11 @@ module.exports = function (platform) {
         });
       }
 
-      // shift first item off the queue.
+      // Since listKeys above is async, and we may need to recurse
+      // through several subdirectories which may or may not have
+      // their own matches, we use a basic FIFO queue.
+      // shift first item off the queue and calls if finish if
+      // done.
       function shift ( ) {
         var t = targets.shift( );
         // if there is nothing left to do, finish
@@ -118,11 +123,15 @@ module.exports = function (platform) {
 
       // test one candidate key
       function isKeyName (name, cb) {
+        // Async generate matches, delay callback.
         listKeys(name, function (err, found) {
+          // At this point readdir has potentially already worked
+          // several times already, and we are investigating a
+          // potential leaf in a tree.
           // a complete key name will generate an error
-          if (err && (err.code == 'ENOENT' || err.code == 'ENOTDIR')) {
+          if (err && (err.code == 'XXXENOENT' || err.code == 'ENOTDIR')) {
             err = null;
-            // a complete key name
+            // a complete key name (with extra slash)
             return cb(null, name);
           }
           // a partial key name generates additional matches
@@ -130,16 +139,21 @@ module.exports = function (platform) {
         });
       }
 
+      // investigate list of potential matches
       function onKeys (err, list) {
+        // only respond to non errors, make sure list is sorted for
+        // stable testable output
         if (!err) list.sort( ).forEach(function (key, i) {
             var name = key;
-            // for each potential key
+            // for each potential key, separate remaining subdirectory
+            // matches from matched key names.
             isKeyName(name, function (err, found, remain) {
-              // release candidate from our processing loop
+              // We've been delaying until confirmation to release
+              // this candidate's task.
               shift( );
-              // partial key generates remaining to process
+              // A partial key generates remaining to process.
               if (remain) return onKeys(err, remain);
-              // complete key should be added to results list
+              // A complete key should be added to results list.
               if (name) results.push(name);
               if (!err && !remain && i == list.length - 1) {
                 // if there is nothing left to do, exactly one more shift
@@ -154,12 +168,17 @@ module.exports = function (platform) {
 
       // calling finish(null, null) is only way to trigger data
       function finish (err, data) {
-        // bubble initial errors back
+        // Initial calls to fs.readdir should bubble errors back to
+        // caller.
+        // Subsequent calls to verify potential keynames depend on
+        // error checking in very specific ways to detect valid
+        // keynames.
         if (err) callback(err);
         if (data) onKeys(err, data.slice(0));
         if (!data) callback(err, results);
       }
 
+      // Start pattern matcher.
       return listKeys(prefix || "/", finish);
     }
 
