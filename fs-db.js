@@ -129,7 +129,7 @@ module.exports = function (platform) {
           // several times already, and we are investigating a
           // potential leaf in a tree.
           // a complete key name will generate an error
-          if (err && (err.code == 'XXXENOENT' || err.code == 'ENOTDIR')) {
+          if (err && (err.code == 'ENOTDIR')) {
             err = null;
             // a complete key name (with extra slash)
             return cb(null, name);
@@ -156,8 +156,8 @@ module.exports = function (platform) {
               // A complete key should be added to results list.
               if (name) results.push(name);
               if (!err && !remain && i == list.length - 1) {
-                // if there is nothing left to do, exactly one more shift
-                // should trigger finish.
+                // if there is nothing left to do, exactly one more
+                // shift should trigger finish.
                 if (targets.length === 0) {
                   shift( );
                 }
