@@ -19,6 +19,7 @@ if (!module.parent) {
   // db.keys('refs/foo/qux', msg("XXXX refs/foo/qux"));
   match('refs/foo/');
   match('refs/two');
+  match('refs/four');
 
 } else {
   describe('git-fs-db backend', function ( ) {
@@ -137,6 +138,16 @@ if (!module.parent) {
             ;
             keys.length.should.equal(5);
             text(keys).should.equal(text(correct));
+            done( );
+          });
+
+        });
+
+        it('should generate errors given bad refs', function (done) {
+          db.init( );
+          db.keys('bad', function (err, keys) {
+            should.exist(err);
+            err.code.should.equal('ENOENT');
             done( );
           });
 
