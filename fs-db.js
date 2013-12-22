@@ -188,7 +188,6 @@ module.exports = function (platform) {
       return listKeys(prefix || "/", finish);
     }
 
-
     function hashToPath(hash) {
       return "objects/" + hash.substr(0, 2) + "/" + hash.substr(2);
     }
