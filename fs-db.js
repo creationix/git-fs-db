@@ -180,7 +180,7 @@ module.exports = function (platform) {
         // error checking in very specific ways to detect valid
         // keynames.
         if (err) callback(err);
-        if (data) onKeys(err, data.slice(0));
+        if (data) onKeys(err, data);
         if (!data) callback(err, results);
       }
 
